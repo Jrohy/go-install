@@ -2,7 +2,7 @@
 ![](https://img.shields.io/github/stars/Jrohy/go-install.svg)
 ![](https://img.shields.io/github/forks/Jrohy/go-install.svg) 
 ![](https://img.shields.io/github/license/Jrohy/go-install.svg)  
-一键安装最新版golang, 国内vps自动设置GOPROXY(goproxy.io)
+一键安装最新版golang, 国内vps自动设置GOPROXY([goproxy.cn](https://goproxy.cn))
 
 ## 安装/更新 最新版golang
 ```
