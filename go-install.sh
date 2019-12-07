@@ -91,8 +91,8 @@ installGo(){
     curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
     [[ -e /usr/local/go ]] && rm -rf /usr/local/go
     tar -C /usr/local -xzf $FILE_NAME
+    rm -f $FILE_NAME
 }
-
 
 main(){
     installGo
