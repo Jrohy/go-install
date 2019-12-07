@@ -7,6 +7,8 @@
 
 INSTALL_VERSION=""
 
+PROXY_URL="https://goproxy.cn"
+
 #######color code########
 RED="31m"      
 GREEN="32m"  
@@ -73,15 +75,17 @@ setupProxy(){
     ipIsConnect "www.google.com"
     if [[ ! $? -eq 0 ]]; then
         [[ -z $(grep GO111MODULE ~/.bashrc) ]] && echo "export GO111MODULE=on" >> ~/.bashrc
-        [[ -z $(grep GOPROXY ~/.bashrc) ]] && echo "export GOPROXY=https://goproxy.io" >> ~/.bashrc
-        colorEcho $GREEN "当前VPS为国内VPS(无法访问谷歌), 成功设置goproxy代理!"
+        [[ -z $(go env|grep $PROXY_URL) ]] && go env -w GOPROXY=$PROXY_URL,direct
+        colorEcho $GREEN "当前VPS为国内VPS, 成功设置goproxy代理!"
         source ~/.bashrc
     fi
 }
 
 installGo(){
     if [[ -z $INSTALL_VERSION ]];then
+        echo "正在获取最新版golang..."
         INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|grep -o "[0-9].*[0-9]"|head -n 1`
+        echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
     fi
     FILE_NAME="go${INSTALL_VERSION}.linux-amd64.tar.gz"
     curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
