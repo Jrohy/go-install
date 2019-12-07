@@ -2,14 +2,14 @@
 ![](https://img.shields.io/github/stars/Jrohy/go-install.svg)
 ![](https://img.shields.io/github/forks/Jrohy/go-install.svg) 
 ![](https://img.shields.io/github/license/Jrohy/go-install.svg)  
-auto install latest go by online/offline (binaries install)
+一键安装最新版golang, 国内vps自动设置GOPROXY(goproxy.io)
 
 ## 安装/更新 最新版golang
 ```
-source <(curl -sL https://git.io/fj8OJ)
+source <(curl -sL https://git.io/go-install)
 ```
 
 ## 安装/更新 指定版本golang
 ```
-./go-install.sh -f /root/go-18.09.6.tgz
+source <(curl -sL https://git.io/go-install) -v 1.13.5
 ``` 
