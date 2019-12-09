@@ -72,7 +72,7 @@ setupEnv(){
 }
 
 setupProxy(){
-    ipIsConnect "www.google.com"
+    ipIsConnect "golang.org"
     if [[ ! $? -eq 0 ]]; then
         [[ -z $(grep GO111MODULE ~/.bashrc) ]] && echo "export GO111MODULE=on" >> ~/.bashrc
         [[ -z $(go env|grep $PROXY_URL) ]] && go env -w GOPROXY=$PROXY_URL,direct
