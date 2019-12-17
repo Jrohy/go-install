@@ -67,6 +67,7 @@ setupEnv(){
         done
         echo "GOPATH值为: `colorEcho $BLUE $GOPATH`"
         echo 'export GOPATH=$GOPATH' >> /etc/profile
+        echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
     fi
     source /etc/profile
 }
