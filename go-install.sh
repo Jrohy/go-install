@@ -48,9 +48,6 @@ ipIsConnect(){
 }
 
 setupEnv(){
-    if [[ -z `echo $PATH|grep /usr/lib/go/bin` ]];then
-        echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
-    fi
     if [[ -z `echo $GOPATH` ]];then
         while :
         do
@@ -66,8 +63,11 @@ setupEnv(){
             break
         done
         echo "GOPATH值为: `colorEcho $BLUE $GOPATH`"
-        echo 'export GOPATH=$GOPATH' >> /etc/profile
+        echo "export GOPATH=$GOPATH" >> /etc/profile
         echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
+    fi
+    if [[ -z `echo $PATH|grep /usr/lib/go/bin` ]];then
+        echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
     fi
     source /etc/profile
 }
