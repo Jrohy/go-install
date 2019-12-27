@@ -65,6 +65,7 @@ setupEnv(){
         echo "GOPATH值为: `colorEcho $BLUE $GOPATH`"
         echo "export GOPATH=$GOPATH" >> /etc/profile
         echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
+        mkdir -p $GOPATH
     fi
     if [[ -z `echo $PATH|grep /usr/lib/go/bin` ]];then
         echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
@@ -82,13 +83,32 @@ setupProxy(){
     fi
 }
 
+sysArch(){
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "i686" ]] || [[ "$ARCH" == "i386" ]]; then
+        VDIS="linux-386"
+    elif [[ "$ARCH" == *"armv7"* ]] || [[ "$ARCH" == "armv6l" ]]; then
+        VDIS="linux-armv6l"
+    elif [[ "$ARCH" == *"armv8"* ]] || [[ "$ARCH" == "aarch64" ]]; then
+        VDIS="linux-arm64"
+    elif [[ "$ARCH" == *"s390x"* ]]; then
+        VDIS="linux-s390x"
+    elif [[ "$ARCH" == "ppc64le" ]]; then
+        VDIS="linux-ppc64le"
+    elif [[ "$ARCH" == *"darwin"* ]]; then
+        VDIS="darwin-amd64"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        VDIS="linux-x86_64"
+    fi
+}
+
 installGo(){
     if [[ -z $INSTALL_VERSION ]];then
         echo "正在获取最新版golang..."
         INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|grep -o "[0-9].*[0-9]"|head -n 1`
         echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
     fi
-    FILE_NAME="go${INSTALL_VERSION}.linux-amd64.tar.gz"
+    FILE_NAME="go${INSTALL_VERSION}.$VDIS.tar.gz"
     curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
     [[ -e /usr/local/go ]] && rm -rf /usr/local/go
     tar -C /usr/local -xzf $FILE_NAME
@@ -96,6 +116,7 @@ installGo(){
 }
 
 main(){
+    sysArch
     installGo
     setupEnv
     setupProxy
