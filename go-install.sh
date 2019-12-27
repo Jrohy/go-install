@@ -67,7 +67,7 @@ setupEnv(){
         echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
         mkdir -p $GOPATH
     fi
-    if [[ -z `echo $PATH|grep /usr/lib/go/bin` ]];then
+    if [[ -z `echo $PATH|grep /usr/local/go/bin` ]];then
         echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
     fi
     source /etc/profile
@@ -105,7 +105,7 @@ sysArch(){
 installGo(){
     if [[ -z $INSTALL_VERSION ]];then
         echo "正在获取最新版golang..."
-        INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|grep -o "[0-9].*[0-9]"|head -n 1`
+        INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|sed '/beta/d'|sed '/rc/d'|grep -o "[0-9].*[0-9]"|head -n 1`
         echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
     fi
     FILE_NAME="go${INSTALL_VERSION}.$VDIS.tar.gz"
