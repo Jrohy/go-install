@@ -98,7 +98,7 @@ sysArch(){
     elif [[ "$ARCH" == *"darwin"* ]]; then
         VDIS="darwin-amd64"
     elif [[ "$ARCH" == "x86_64" ]]; then
-        VDIS="linux-x86_64"
+        VDIS="linux-amd64"
     fi
 }
 
