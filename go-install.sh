@@ -7,7 +7,7 @@
 
 INSTALL_VERSION=""
 
-PROXY_URL="https://goproxy.cn"
+PROXY_URL="https://goproxy.io"
 
 #######color code########
 RED="31m"      
