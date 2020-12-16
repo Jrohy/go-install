@@ -6,10 +6,10 @@
 
 ## 安装/更新 最新版golang
 ```
-source <(curl -L https://git.io/go-install)
+source <(curl -L https://go-install.netlify.app/install.sh)
 ```
 
 ## 安装/更新 指定版本golang
 ```
-source <(curl -L https://git.io/go-install) -v 1.13.5
+source <(curl -L https://go-install.netlify.app/install.sh) -v 1.13.5
 ``` 
