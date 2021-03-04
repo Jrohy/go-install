@@ -7,6 +7,10 @@
 
 INSTALL_VERSION=""
 
+CAN_GOOGLE=1
+
+FORCE_MODE=0
+
 PROXY_URL="https://goproxy.cn"
 
 #######color code########
@@ -28,6 +32,11 @@ while [[ $# > 0 ]];do
         -v|--version)
         INSTALL_VERSION="$2"
         echo -e "准备安装$(colorEcho ${BLUE} $INSTALL_VERSION)版本golang..\n"
+        shift
+        ;;
+        -f)
+        FORCE_MODE=1
+        echo -e "强制更新golang..\n"
         shift
         ;;
         *)
@@ -73,9 +82,13 @@ setupEnv(){
     source /etc/profile
 }
 
-setupProxy(){
+checkNetwork(){
     ipIsConnect "golang.org"
-    if [[ ! $? -eq 0 && `go env|grep proxy.golang.org` ]]; then
+    [[ ! $? -eq 0 ]] && CAN_GOOGLE=0
+}
+
+setupProxy(){
+    if [[ $CAN_GOOGLE == 0 && `go env|grep proxy.golang.org` ]]; then
         go env -w GO111MODULE=on
         go env -w GOPROXY=$PROXY_URL,direct
         colorEcho $GREEN "当前网络环境为国内环境, 成功设置goproxy代理!"
@@ -104,16 +117,24 @@ sysArch(){
 installGo(){
     if [[ -z $INSTALL_VERSION ]];then
         echo "正在获取最新版golang..."
-        INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|sed '/beta/d'|sed '/rc/d'|grep -o "[0-9].*[0-9]"|head -n 1`
+        if [[ $CAN_GOOGLE == 0 ]];then
+            INSTALL_VERSION=`curl -s https://gomirrors.org/|grep -w downloadBox|grep src| grep -oP '\d*\.\d+'`
+        else
+            INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|sed '/beta/d'|sed '/rc/d'|grep -o "[0-9].*[0-9]"|head -n 1`
+        fi
         echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
-        if [[ `command -v go` ]];then
+        if [[ $FORCE_MODE == 0 && `command -v go` ]];then
             if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $INSTALL_VERSION ]];then
                 return
             fi
         fi
     fi
     FILE_NAME="go${INSTALL_VERSION}.$VDIS.tar.gz"
-    curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
+    if [[ $CAN_GOOGLE == 0 ]];then
+        curl -L https://gomirrors.org/dl/go/$FILE_NAME -o $FILE_NAME
+    else
+        curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
+    fi
     [[ -e /usr/local/go ]] && rm -rf /usr/local/go
     tar -C /usr/local -xzf $FILE_NAME
     rm -f $FILE_NAME
@@ -121,6 +142,7 @@ installGo(){
 
 main(){
     sysArch
+    checkNetwork
     installGo
     setupEnv
     setupProxy
