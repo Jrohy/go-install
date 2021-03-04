@@ -130,11 +130,7 @@ installGo(){
         fi
     fi
     FILE_NAME="go${INSTALL_VERSION}.$VDIS.tar.gz"
-    if [[ $CAN_GOOGLE == 0 ]];then
-        curl -L https://gomirrors.org/dl/go/$FILE_NAME -o $FILE_NAME
-    else
-        curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
-    fi
+    curl -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
     [[ -e /usr/local/go ]] && rm -rf /usr/local/go
     tar -C /usr/local -xzf $FILE_NAME
     rm -f $FILE_NAME
