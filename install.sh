@@ -137,7 +137,7 @@ installGo(){
     do
         curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
         tar -C $TEMP_PATH -xzf $FILE_NAME
-        [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败, 正在重新下载包.."; continue; }
+        [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败, 正在重新下载包.."; rm -f $FILE_NAME; continue; }
         [[ -e /usr/local/go ]] && rm -rf /usr/local/go
         mv $TEMP_PATH/go /usr/local/
         INSTALL_SUCCESS=1
