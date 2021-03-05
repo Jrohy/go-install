@@ -144,7 +144,7 @@ installGo(){
         break
     done
     rm -rf $TEMP_PATH $FILE_NAME
-    [[ $INSTALL_SUCCESS == 0 ]] && { colorEcho $RED "\n安装失败!"; exit 0; }
+    [[ $INSTALL_SUCCESS == 0 ]] && { colorEcho $RED "\n安装失败!"; exit -1; }
 }
 
 main(){
