@@ -37,7 +37,6 @@ while [[ $# > 0 ]];do
         -f)
         FORCE_MODE=1
         echo -e "强制更新golang..\n"
-        shift
         ;;
         *)
                 # unknown option
