@@ -117,7 +117,7 @@ installGo(){
     if [[ -z $INSTALL_VERSION ]];then
         echo "正在获取最新版golang..."
         if [[ $CAN_GOOGLE == 0 ]];then
-            INSTALL_VERSION=`curl -s https://gomirrors.org/|grep -w downloadBox|grep src| grep -oP '\d*\.\d+'`
+            INSTALL_VERSION=`curl -s https://gomirrors.org/|grep -w downloadBox|grep src|grep -oP '[\d.]+'|head -n 1`
         else
             INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|sed '/beta/d'|sed '/rc/d'|grep -o "[0-9].*[0-9]"|head -n 1`
         fi
@@ -143,7 +143,7 @@ installGo(){
         break
     done
     rm -rf $TEMP_PATH $FILE_NAME
-    [[ $INSTALL_SUCCESS == 0 ]] && { colorEcho $RED "\n安装失败!"; exit -1; }
+    [[ $INSTALL_SUCCESS == 0 ]] && { colorEcho $RED "\n安装失败!"; exit 1; }
 }
 
 main(){
