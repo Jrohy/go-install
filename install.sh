@@ -130,20 +130,17 @@ installGo(){
     fi
     FILE_NAME="go${INSTALL_VERSION}.$VDIS.tar.gz"
     local TEMP_PATH=`mktemp -d`
-    local INSTALL_SUCCESS=0
 
-    for((i=1;i<=5;i++));  
-    do
+    if [[ $CAN_GOOGLE == 0 ]];then
+        curl -H 'Cache-Control: no-cache' -L https://gomirrors.org/dl/go/$FILE_NAME -o $FILE_NAME
+    else
         curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
-        tar -C $TEMP_PATH -xzf $FILE_NAME
-        [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败, 正在重新下载包.."; rm -f $FILE_NAME; continue; }
-        [[ -e /usr/local/go ]] && rm -rf /usr/local/go
-        mv $TEMP_PATH/go /usr/local/
-        INSTALL_SUCCESS=1
-        break
-    done
+    fi
+    tar -C $TEMP_PATH -xzf $FILE_NAME
+    [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败!"; rm -rf $TEMP_PATH $FILE_NAME; exit 1; }
+    [[ -e /usr/local/go ]] && rm -rf /usr/local/go
+    mv $TEMP_PATH/go /usr/local/
     rm -rf $TEMP_PATH $FILE_NAME
-    [[ $INSTALL_SUCCESS == 0 ]] && { colorEcho $RED "\n安装失败!"; exit 1; }
 }
 
 main(){
