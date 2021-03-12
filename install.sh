@@ -25,14 +25,6 @@ colorEcho(){
     echo -e "\033[${COLOR}${@:2}\033[0m"
 }
 
-catchExit() {
-    rm -rf $TEMP_PATH $FILE_NAME
-    echo ""
-    exit 0
-}
-
-trap catchExit 1 2 3 9 15 20 exit
-
 #######get params#########
 while [[ $# > 0 ]];do
     KEY="$1"
@@ -146,11 +138,12 @@ installGo(){
         rm -rf $FILE_NAME
         curl -H 'Cache-Control: no-cache' -L https://gomirrors.org/dl/go/$FILE_NAME -o $FILE_NAME
         tar -C $TEMP_PATH -xzf $FILE_NAME
-        [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败!"; exit 1; }
+        [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败!"; rm -rf $TEMP_PATH $FILE_NAME; exit 1; }
 
     fi
     [[ -e /usr/local/go ]] && rm -rf /usr/local/go
     mv $TEMP_PATH/go /usr/local/
+    rm -rf $TEMP_PATH $FILE_NAME
 }
 
 main(){
