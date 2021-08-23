@@ -121,6 +121,7 @@ installGo(){
         else
             INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|sed '/beta/d'|sed '/rc/d'|grep -o "[0-9].*[0-9]"|head -n 1`
         fi
+        [[ ${INSTALL_VERSION: -1} == '.' ]] && INSTALL_VERSION=${INSTALL_VERSION%?}
         echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
         if [[ $FORCE_MODE == 0 && `command -v go` ]];then
             if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $INSTALL_VERSION ]];then
