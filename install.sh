@@ -119,9 +119,9 @@ installGo(){
         if [[ $CAN_GOOGLE == 0 ]];then
             INSTALL_VERSION=`curl -s https://gomirrors.org/|grep -w downloadBox|grep src|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
         else
-            INSTALL_VERSION=`curl -s https://github.com/golang/go/releases|grep releases/tag|sed '/beta/d'|sed '/rc/d'|grep -o "[0-9].*[0-9]"|head -n 1`
+            INSTALL_VERSION=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
         fi
-        [[ ${INSTALL_VERSION: -1} == '.' ]] && INSTALL_VERSION=${INSTALL_VERSION%?}
+        [[ -z $INSTALL_VERSION ]] && { colorEcho $YELLOW "\n获取go版本号失败!"; exit 1; }
         echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
         if [[ $FORCE_MODE == 0 && `command -v go` ]];then
             if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $INSTALL_VERSION ]];then
