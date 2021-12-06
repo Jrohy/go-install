@@ -117,7 +117,7 @@ installGo(){
     if [[ -z $INSTALL_VERSION ]];then
         echo "正在获取最新版golang..."
         if [[ $CAN_GOOGLE == 0 ]];then
-            INSTALL_VERSION=`curl -s https://gomirrors.org/|grep -w downloadBox|grep src|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
+            INSTALL_VERSION=`curl -s https://golang.google.cn/dl/|grep -w downloadBox|grep src|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
         else
             INSTALL_VERSION=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
         fi
@@ -135,9 +135,9 @@ installGo(){
     curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
     tar -C $TEMP_PATH -xzf $FILE_NAME
     if [[ $? != 0 ]];then
-        colorEcho $YELLOW "\n解压失败! 正在切换下载源重新下载..."
+        colorEcho $YELLOW "\n解压失败! 正在重新下载..."
         rm -rf $FILE_NAME
-        curl -H 'Cache-Control: no-cache' -L https://gomirrors.org/dl/go/$FILE_NAME -o $FILE_NAME
+        curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
         tar -C $TEMP_PATH -xzf $FILE_NAME
         [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败!"; rm -rf $TEMP_PATH $FILE_NAME; exit 1; }
 
