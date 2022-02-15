@@ -61,7 +61,7 @@ setupEnv(){
     if [[ $SUDO == "" ]];then
         PROFILE_PATH="/etc/profile"
     elif [[ -e ~/.zshrc ]];then
-        PROFILE_PATH="~/.zprofile"
+        PROFILE_PATH="$HOME/.zprofile"
     fi
     if [[ $SUDO == "" && -z `echo $GOPATH` ]];then
         while :
@@ -161,8 +161,8 @@ installGo(){
     rm -rf $TEMP_PATH $FILE_NAME
 
     if [[ ! -e /usr/local/bin/goupdate ]];then
-        $SUDO echo "source <(curl -L https://go-install.netlify.app/install.sh)" > /usr/local/bin/goupdate
-        $SUDO chmod +x /usr/local/bin/goupdate
+        $SUDO echo "source <(curl -L https://go-install.netlify.app/install.sh)" > /usr/bin/goupdate
+        $SUDO chmod +x /usr/bin/goupdate
     fi
 }
 
