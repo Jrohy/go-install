@@ -58,7 +58,12 @@ ipIsConnect(){
 }
 
 setupEnv(){
-    if [[ -z `echo $GOPATH` ]];then
+    if [[ $SUDO == "" ]];then
+        PROFILE_PATH="/etc/profile"
+    elif [[ -e ~/.zshrc ]];then
+        PROFILE_PATH="~/.zprofile"
+    fi
+    if [[ $SUDO == "" && -z `echo $GOPATH` ]];then
         while :
         do
             read -p "默认GOPATH路径: `colorEcho $BLUE /home/go`, 回车直接使用或者输入自定义绝对路径: " GOPATH
@@ -73,14 +78,14 @@ setupEnv(){
             break
         done
         echo "GOPATH值为: `colorEcho $BLUE $GOPATH`"
-        echo "export GOPATH=$GOPATH" >> /etc/profile
-        echo 'export PATH=$PATH:$GOPATH/bin' >> /etc/profile
+        echo "export GOPATH=$GOPATH" >> $PROFILE_PATH
+        echo 'export PATH=$PATH:$GOPATH/bin' >> $PROFILE_PATH
         mkdir -p $GOPATH
     fi
     if [[ -z `echo $PATH|grep /usr/local/go/bin` ]];then
-        echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+        echo 'export PATH=$PATH:/usr/local/go/bin' >> $PROFILE_PATH
     fi
-    source /etc/profile
+    source $PROFILE_PATH
 }
 
 checkNetwork(){
@@ -154,6 +159,11 @@ installGo(){
     [[ -e /usr/local/go ]] && $SUDO rm -rf /usr/local/go
     $SUDO mv $TEMP_PATH/go /usr/local/
     rm -rf $TEMP_PATH $FILE_NAME
+
+    if [[ ! -e /usr/local/bin/goupdate ]];then
+        $SUDO echo "source <(curl -L https://go-install.netlify.app/install.sh)" > /usr/local/bin/goupdate
+        $SUDO chmod +x /usr/local/bin/goupdate
+    fi
 }
 
 main(){
