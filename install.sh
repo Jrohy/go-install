@@ -11,6 +11,8 @@ CAN_GOOGLE=1
 
 FORCE_MODE=0
 
+SUDO=""
+
 PROXY_URL="https://goproxy.cn"
 
 #######color code########
@@ -117,15 +119,16 @@ sysArch(){
             VDIS="linux-amd64"
         fi
     fi
+    [ $(id -u) != "0" ] && SUDO="sudo"
 }
 
 installGo(){
     if [[ -z $INSTALL_VERSION ]];then
         echo "正在获取最新版golang..."
         if [[ $CAN_GOOGLE == 0 ]];then
-            INSTALL_VERSION=`curl -s https://golang.google.cn/dl/|grep -w downloadBox|grep src|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
+            INSTALL_VERSION=`curl -s https://golang.google.cn/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
         else
-            INSTALL_VERSION=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oP '\d+\.\d+\.?\d*'|head -n 1`
+            INSTALL_VERSION=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
         fi
         [[ -z $INSTALL_VERSION ]] && { colorEcho $YELLOW "\n获取go版本号失败!"; exit 1; }
         echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
@@ -148,8 +151,8 @@ installGo(){
         [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败!"; rm -rf $TEMP_PATH $FILE_NAME; exit 1; }
 
     fi
-    [[ -e /usr/local/go ]] && rm -rf /usr/local/go
-    mv $TEMP_PATH/go /usr/local/
+    [[ -e /usr/local/go ]] && $SUDO rm -rf /usr/local/go
+    $SUDO mv $TEMP_PATH/go /usr/local/
     rm -rf $TEMP_PATH $FILE_NAME
 }
 
