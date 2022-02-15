@@ -13,6 +13,8 @@ FORCE_MODE=0
 
 SUDO=""
 
+OS="Linux"
+
 PROXY_URL="https://goproxy.cn"
 
 #######color code########
@@ -104,6 +106,7 @@ setupProxy(){
 sysArch(){
     ARCH=$(uname -m)
     if [[ `uname -s` == "Darwin" ]];then
+        OS="Darwin"
         if [[ "$ARCH" == "arm64" ]];then
             VDIS="darwin-arm64"
         else
@@ -159,10 +162,18 @@ installGo(){
     [[ -e /usr/local/go ]] && $SUDO rm -rf /usr/local/go
     $SUDO mv $TEMP_PATH/go /usr/local/
     rm -rf $TEMP_PATH $FILE_NAME
+}
 
-    if [[ ! -e /usr/local/bin/goupdate ]];then
-        $SUDO echo "source <(curl -L https://go-install.netlify.app/install.sh)" > /usr/bin/goupdate
-        $SUDO chmod +x /usr/bin/goupdate
+installUpdater(){
+    if [[ $OS == "Linux" && ! -e /usr/local/bin/goupdate ]];then
+        echo "source <(curl -L https://go-install.netlify.app/install.sh)" > /usr/local/bin/goupdate
+        chmod +x /usr/local/bin/goupdate
+    elif [[ $OS == "Darwin" && ! -e $HOME/go/bin/goupdate ]];then
+        cat > $HOME/go/bin/goupdate << EOF
+#!/bin/zsh
+source <(curl -L https://go-install.netlify.app/install.sh)
+EOF
+        chmod +x $HOME/go/bin/goupdate
     fi
 }
 
@@ -172,6 +183,7 @@ main(){
     installGo
     setupEnv
     setupProxy
+    installUpdater
     echo -e "golang `colorEcho $BLUE $INSTALL_VERSION` 安装成功!"
 }
 
