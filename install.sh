@@ -96,20 +96,26 @@ setupProxy(){
 
 sysArch(){
     ARCH=$(uname -m)
-    if [[ "$ARCH" == "i686" ]] || [[ "$ARCH" == "i386" ]]; then
-        VDIS="linux-386"
-    elif [[ "$ARCH" == *"armv7"* ]] || [[ "$ARCH" == "armv6l" ]]; then
-        VDIS="linux-armv6l"
-    elif [[ "$ARCH" == *"armv8"* ]] || [[ "$ARCH" == "aarch64" ]]; then
-        VDIS="linux-arm64"
-    elif [[ "$ARCH" == *"s390x"* ]]; then
-        VDIS="linux-s390x"
-    elif [[ "$ARCH" == "ppc64le" ]]; then
-        VDIS="linux-ppc64le"
-    elif [[ "$ARCH" == *"darwin"* ]]; then
-        VDIS="darwin-amd64"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        VDIS="linux-amd64"
+    if [[ `uname -s` == "Darwin" ]];then
+        if [[ "$ARCH" == "arm64" ]];then
+            VDIS="darwin-arm64"
+        else
+            VDIS="darwin-amd64"
+        fi
+    else
+        if [[ "$ARCH" == "i686" ]] || [[ "$ARCH" == "i386" ]]; then
+            VDIS="linux-386"
+        elif [[ "$ARCH" == *"armv7"* ]] || [[ "$ARCH" == "armv6l" ]]; then
+            VDIS="linux-armv6l"
+        elif [[ "$ARCH" == *"armv8"* ]] || [[ "$ARCH" == "aarch64" ]]; then
+            VDIS="linux-arm64"
+        elif [[ "$ARCH" == *"s390x"* ]]; then
+            VDIS="linux-s390x"
+        elif [[ "$ARCH" == "ppc64le" ]]; then
+            VDIS="linux-ppc64le"
+        elif [[ "$ARCH" == "x86_64" ]]; then
+            VDIS="linux-amd64"
+        fi
     fi
 }
 
