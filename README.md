@@ -19,3 +19,5 @@ source <(curl -L https://go-install.netlify.app/install.sh) -v 1.13.5
 ```
 source <(curl -L https://go-install.netlify.app/install.sh) -f
 ```
+
+脚本会自动安装`goupdate`全局命令, 命令和上面的`source <(curl -L https://go-install.netlify.app/install.sh)`命令等价, 后面可以直接运行`goupdate`命令来更新即可
