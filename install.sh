@@ -5,41 +5,33 @@
 # cancel centos alias
 [[ -f /etc/redhat-release ]] && unalias -a
 
-INSTALL_VERSION=""
+sudo=""
 
-CAN_GOOGLE=1
+os="Linux"
 
-FORCE_MODE=0
-
-SUDO=""
-
-OS="Linux"
-
-PROXY_URL="https://goproxy.cn"
+proxy_url="https://goproxy.cn"
 
 #######color code########
-RED="31m"      
-GREEN="32m"  
-YELLOW="33m" 
-BLUE="36m"
-FUCHSIA="35m"
+red="31m"      
+green="32m"  
+yellow="33m" 
+blue="36m"
+fuchsia="35m"
 
-colorEcho(){
-    COLOR=$1
-    echo -e "\033[${COLOR}${@:2}\033[0m"
+color_echo(){
+    echo -e "\033[$1${@:2}\033[0m"
 }
 
 #######get params#########
 while [[ $# > 0 ]];do
-    KEY="$1"
-    case $KEY in
+    case "$1" in
         -v|--version)
-        INSTALL_VERSION="$2"
-        echo -e "准备安装$(colorEcho ${BLUE} $INSTALL_VERSION)版本golang..\n"
+        install_version="$2"
+        echo -e "准备安装$(color_echo ${blue} $install_version)版本golang..\n"
         shift
         ;;
         -f)
-        FORCE_MODE=1
+        force_mode=1
         echo -e "强制更新golang..\n"
         ;;
         *)
@@ -50,7 +42,7 @@ while [[ $# > 0 ]];do
 done
 #############################
 
-ipIsConnect(){
+ip_is_connect(){
     ping -c2 -i0.3 -W1 $1 &>/dev/null
     if [ $? -eq 0 ];then
         return 0
@@ -59,19 +51,19 @@ ipIsConnect(){
     fi
 }
 
-setupEnv(){
-    if [[ $SUDO == "" ]];then
-        PROFILE_PATH="/etc/profile"
+setup_env(){
+    if [[ $sudo == "" ]];then
+        profile_path="/etc/profile"
     elif [[ -e ~/.zshrc ]];then
-        PROFILE_PATH="$HOME/.zprofile"
+        profile_path="$HOME/.zprofile"
     fi
-    if [[ $SUDO == "" && -z `echo $GOPATH` ]];then
+    if [[ $sudo == "" && -z `echo $GOPATH` ]];then
         while :
         do
-            read -p "默认GOPATH路径: `colorEcho $BLUE /home/go`, 回车直接使用或者输入自定义绝对路径: " GOPATH
+            read -p "默认GOPATH路径: `color_echo $blue /home/go`, 回车直接使用或者输入自定义绝对路径: " GOPATH
             if [[ $GOPATH ]];then
                 if [[ ${GOPATH:0:1} != "/" ]];then
-                    colorEcho $YELLOW "请输入绝对路径!"
+                    color_echo $yellow "请输入绝对路径!"
                     continue
                 fi
             else
@@ -79,99 +71,99 @@ setupEnv(){
             fi
             break
         done
-        echo "GOPATH值为: `colorEcho $BLUE $GOPATH`"
-        echo "export GOPATH=$GOPATH" >> $PROFILE_PATH
-        echo 'export PATH=$PATH:$GOPATH/bin' >> $PROFILE_PATH
+        echo "GOPATH值为: `color_echo $blue $GOPATH`"
+        echo "export GOPATH=$GOPATH" >> $profile_path
+        echo 'export PATH=$PATH:$GOPATH/bin' >> $profile_path
         mkdir -p $GOPATH
     fi
     if [[ -z `echo $PATH|grep /usr/local/go/bin` ]];then
-        echo 'export PATH=$PATH:/usr/local/go/bin' >> $PROFILE_PATH
+        echo 'export PATH=$PATH:/usr/local/go/bin' >> $profile_path
     fi
-    source $PROFILE_PATH
+    source $profile_path
 }
 
-checkNetwork(){
-    ipIsConnect "golang.org"
-    [[ ! $? -eq 0 ]] && CAN_GOOGLE=0
+check_network(){
+    ip_is_connect "golang.org"
+    [[ ! $? -eq 0 ]] && can_google=0
 }
 
-setupProxy(){
-    if [[ $CAN_GOOGLE == 0 && `go env|grep proxy.golang.org` ]]; then
+setup_proxy(){
+    if [[ $can_google == 0 && `go env|grep proxy.golang.org` ]]; then
         go env -w GO111MODULE=on
-        go env -w GOPROXY=$PROXY_URL,direct
-        colorEcho $GREEN "当前网络环境为国内环境, 成功设置goproxy代理!"
+        go env -w GOPROXY=$proxy_url,direct
+        color_echo $green "当前网络环境为国内环境, 成功设置goproxy代理!"
     fi
 }
 
-sysArch(){
-    ARCH=$(uname -m)
+sys_arch(){
+    arch=$(uname -m)
     if [[ `uname -s` == "Darwin" ]];then
-        OS="Darwin"
-        if [[ "$ARCH" == "arm64" ]];then
-            VDIS="darwin-arm64"
+        os="Darwin"
+        if [[ "$arch" == "arm64" ]];then
+            vdis="darwin-arm64"
         else
-            VDIS="darwin-amd64"
+            vdis="darwin-amd64"
         fi
     else
-        if [[ "$ARCH" == "i686" ]] || [[ "$ARCH" == "i386" ]]; then
-            VDIS="linux-386"
-        elif [[ "$ARCH" == *"armv7"* ]] || [[ "$ARCH" == "armv6l" ]]; then
-            VDIS="linux-armv6l"
-        elif [[ "$ARCH" == *"armv8"* ]] || [[ "$ARCH" == "aarch64" ]]; then
-            VDIS="linux-arm64"
-        elif [[ "$ARCH" == *"s390x"* ]]; then
-            VDIS="linux-s390x"
-        elif [[ "$ARCH" == "ppc64le" ]]; then
-            VDIS="linux-ppc64le"
-        elif [[ "$ARCH" == "x86_64" ]]; then
-            VDIS="linux-amd64"
+        if [[ "$arch" == "i686" ]] || [[ "$arch" == "i386" ]]; then
+            vdis="linux-386"
+        elif [[ "$arch" == *"armv7"* ]] || [[ "$arch" == "armv6l" ]]; then
+            vdis="linux-armv6l"
+        elif [[ "$arch" == *"armv8"* ]] || [[ "$arch" == "aarch64" ]]; then
+            vdis="linux-arm64"
+        elif [[ "$arch" == *"s390x"* ]]; then
+            vdis="linux-s390x"
+        elif [[ "$arch" == "ppc64le" ]]; then
+            vdis="linux-ppc64le"
+        elif [[ "$arch" == "x86_64" ]]; then
+            vdis="linux-amd64"
         fi
     fi
-    [ $(id -u) != "0" ] && SUDO="sudo"
+    [ $(id -u) != "0" ] && sudo="sudo"
 }
 
-installGo(){
-    if [[ -z $INSTALL_VERSION ]];then
+install_go(){
+    if [[ -z $install_version ]];then
         echo "正在获取最新版golang..."
-        if [[ $CAN_GOOGLE == 0 ]];then
-            INSTALL_VERSION=`curl -s https://golang.google.cn/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+        if [[ $can_google == 0 ]];then
+            install_version=`curl -s https://golang.google.cn/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
         else
-            INSTALL_VERSION=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+            install_version=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
         fi
-        [[ ${INSTALL_VERSION: -1} == '.' ]] && INSTALL_VERSION=${INSTALL_VERSION%?}
-        [[ -z $INSTALL_VERSION ]] && { colorEcho $YELLOW "\n获取go版本号失败!"; exit 1; }
-        echo "最新版golang: `colorEcho $BLUE $INSTALL_VERSION`"
-        if [[ $FORCE_MODE == 0 && `command -v go` ]];then
-            if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $INSTALL_VERSION ]];then
+        [[ ${install_version: -1} == '.' ]] && install_version=${install_version%?}
+        [[ -z $install_version ]] && { color_echo $yellow "\n获取go版本号失败!"; exit 1; }
+        echo "最新版golang: `color_echo $blue $install_version`"
+        if [[ -z $force_mode && `command -v go` ]];then
+            if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $install_version ]];then
                 return
             fi
         fi
     fi
-    FILE_NAME="go${INSTALL_VERSION}.$VDIS.tar.gz"
-    local TEMP_PATH=`mktemp -d`
+    file_name="go${install_version}.$vdis.tar.gz"
+    local temp_path=`mktemp -d`
 
-    curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
-    tar -C $TEMP_PATH -xzf $FILE_NAME
+    curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$file_name -o $file_name
+    tar -C $temp_path -xzf $file_name
     if [[ $? != 0 ]];then
-        colorEcho $YELLOW "\n解压失败! 正在重新下载..."
-        rm -rf $FILE_NAME
-        curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$FILE_NAME -o $FILE_NAME
-        tar -C $TEMP_PATH -xzf $FILE_NAME
-        [[ $? != 0 ]] && { colorEcho $YELLOW "\n解压失败!"; rm -rf $TEMP_PATH $FILE_NAME; exit 1; }
+        color_echo $yellow "\n解压失败! 正在重新下载..."
+        rm -rf $file_name
+        curl -H 'Cache-Control: no-cache' -L https://dl.google.com/go/$file_name -o $file_name
+        tar -C $temp_path -xzf $file_name
+        [[ $? != 0 ]] && { color_echo $yellow "\n解压失败!"; rm -rf $temp_path $file_name; exit 1; }
 
     fi
-    [[ -e /usr/local/go ]] && $SUDO rm -rf /usr/local/go
-    $SUDO mv $TEMP_PATH/go /usr/local/
-    rm -rf $TEMP_PATH $FILE_NAME
+    [[ -e /usr/local/go ]] && $sudo rm -rf /usr/local/go
+    $sudo mv $temp_path/go /usr/local/
+    rm -rf $temp_path $file_name
 }
 
-installUpdater(){
-    if [[ $OS == "Linux" ]];then
+install_updater(){
+    if [[ $os == "Linux" ]];then
         if [[ ! -e /usr/local/bin/goupdate || -z `cat /usr/local/bin/goupdate|grep '$@'` ]];then
             echo 'source <(curl -L https://go-install.netlify.app/install.sh) $@' > /usr/local/bin/goupdate
             chmod +x /usr/local/bin/goupdate
         fi
-    elif [[ $OS == "Darwin" ]];then
+    elif [[ $os == "Darwin" ]];then
         if [[ ! -e $HOME/go/bin/goupdate || -z `cat $HOME/go/bin/goupdate|grep '$@'` ]];then
             cat > $HOME/go/bin/goupdate << 'EOF'
 #!/bin/zsh
@@ -183,13 +175,13 @@ EOF
 }
 
 main(){
-    sysArch
-    checkNetwork
-    installGo
-    setupEnv
-    setupProxy
-    installUpdater
-    echo -e "golang `colorEcho $BLUE $INSTALL_VERSION` 安装成功!"
+    sys_arch
+    check_network
+    install_go
+    setup_env
+    setup_proxy
+    install_updater
+    echo -e "golang `color_echo $blue $install_version` 安装成功!"
 }
 
 main
