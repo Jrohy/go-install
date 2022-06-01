@@ -5,9 +5,15 @@
 # cancel centos alias
 [[ -f /etc/redhat-release ]] && unalias -a
 
+can_google=1
+
+force_mode=0
+
 sudo=""
 
 os="Linux"
+
+install_version=""
 
 proxy_url="https://goproxy.cn"
 
@@ -133,10 +139,10 @@ install_go(){
         [[ ${install_version: -1} == '.' ]] && install_version=${install_version%?}
         [[ -z $install_version ]] && { color_echo $yellow "\n获取go版本号失败!"; exit 1; }
         echo "最新版golang: `color_echo $blue $install_version`"
-        if [[ -z $force_mode && `command -v go` ]];then
-            if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $install_version ]];then
-                return
-            fi
+    fi
+    if [[ $force_mode == 0 && `command -v go` ]];then
+        if [[ `go version|awk '{print $3}'|grep -Eo "[0-9.]+"` == $install_version ]];then
+            return
         fi
     fi
     file_name="go${install_version}.$vdis.tar.gz"
