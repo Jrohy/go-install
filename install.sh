@@ -132,7 +132,7 @@ install_go(){
     if [[ -z $install_version ]];then
         echo "正在获取最新版golang..."
         count=0
-        curl_param="-s --connect-timeout 10 -H 'Cache-Control: no-cache'"
+        curl_param="-s --connect-timeout 15 -H 'Cache-Control: no-cache'"
         while :
         do
             install_version=""
