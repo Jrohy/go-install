@@ -131,13 +131,29 @@ sys_arch(){
 install_go(){
     if [[ -z $install_version ]];then
         echo "正在获取最新版golang..."
-        if [[ $can_google == 0 ]];then
-            install_version=`curl -s --connect-timeout 10 https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
-        else
-            install_version=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
-        fi
-        [[ ${install_version: -1} == '.' ]] && install_version=${install_version%?}
-        [[ -z $install_version ]] && { color_echo $yellow "\n获取go版本号失败!"; exit 1; }
+        count=0
+        curl_param="-s --connect-timeout 10 -H 'Cache-Control: no-cache'"
+        while :
+        do
+            install_version=""
+            if [[ $can_google == 0 ]];then
+                install_version=`curl $curl_param https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+            else
+                install_version=`curl $curl_param https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+            fi
+            [[ ${install_version: -1} == '.' ]] && install_version=${install_version%?}
+            if [[ -z $install_version ]];then
+                if [[ $count < 3 ]];then
+                    color_echo $yellow "获取go版本号超时, 正在重试..."
+                else
+                    color_echo $red "\n获取go版本号失败!"
+                    exit 1
+                fi
+            else
+                break
+            fi
+            count=$(($count+1))
+        done
         echo "最新版golang: `color_echo $blue $install_version`"
     fi
     if [[ $force_mode == 0 && `command -v go` ]];then
