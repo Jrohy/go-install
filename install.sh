@@ -132,7 +132,7 @@ install_go(){
     if [[ -z $install_version ]];then
         echo "正在获取最新版golang..."
         if [[ $can_google == 0 ]];then
-            install_version=`curl -s https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+            install_version=`curl -s --connect-timeout 10 https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
         else
             install_version=`curl -s https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
         fi
