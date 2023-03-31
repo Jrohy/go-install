@@ -132,14 +132,13 @@ install_go(){
     if [[ -z $install_version ]];then
         echo "正在获取最新版golang..."
         count=0
-        curl_param="-s --connect-timeout 15 -H 'Cache-Control: no-cache'"
         while :
         do
             install_version=""
             if [[ $can_google == 0 ]];then
-                install_version=`curl "$curl_param" https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+                install_version=`curl -s --connect-timeout 15 -H 'Cache-Control: no-cache' https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
             else
-                install_version=`curl "$curl_param" https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+                install_version=`curl -s --connect-timeout 15 -H 'Cache-Control: no-cache' https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
             fi
             [[ ${install_version: -1} == '.' ]] && install_version=${install_version%?}
             if [[ -z $install_version ]];then
